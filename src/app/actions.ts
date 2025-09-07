@@ -3,7 +3,6 @@
 
 import { ai } from '@/ai/genkit';
 import { identifyEquipmentFunctions, type IdentifyEquipmentFunctionsOutput } from '@/ai/flows/identify-equipment-functions';
-import { suggestMaintenanceTasks, type SuggestMaintenanceTasksOutput } from '@/ai/flows/suggest-maintenance-tasks';
 import { generateMaintenancePlan, type GenerateMaintenancePlanOutput } from '@/ai/flows/generate-maintenance-plan';
 import { z } from 'zod';
 
@@ -60,12 +59,7 @@ export async function getConsequenceAssessmentAction(data: { failureModes:string
 }
 
 
-// Etapa 4: Sugerir Tarefas de Manutenção
-export async function getMaintenanceTasksAction(data: { equipmentName: string; failureModes: string[] }): Promise<SuggestMaintenanceTasksOutput> {
-  return await suggestMaintenanceTasks({ equipmentName: data.equipmentName, failureModes: data.failureModes });
-}
-
-// Etapa 5: Gerar Plano Final
+// Etapa 4: Gerar Plano Final
 export async function generateFinalPlanAction(data: {
   equipmentTag: string;
   equipmentDescription: string;

@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { getFunctionsAction, getFailureModesAction, getConsequenceAssessmentAction, getMaintenanceTasksAction, generateFinalPlanAction } from "@/app/actions";
+import { getFunctionsAction, getFailureModesAction, getConsequenceAssessmentAction, generateFinalPlanAction } from "@/app/actions";
 import type { SuggestMaintenanceTasksOutput } from "@/ai/flows/suggest-maintenance-tasks";
 import { Loader2, Settings, ListChecks, ShieldAlert, ClipboardList, Wrench, Zap, FileImage, X } from "lucide-react";
 import StepCard from "./step-card";
@@ -36,7 +36,6 @@ interface Results {
   functions: string[] | null;
   failureModes: string[] | null;
   assessment: string | null;
-  tasks: SuggestMaintenanceTasksOutput['maintenanceTasks'] | null;
   plan: string | null;
 }
 
@@ -48,7 +47,6 @@ export default function MaintenanceWizard() {
     functions: null,
     failureModes: null,
     assessment: null,
-    tasks: null,
     plan: null,
   });
   const [showResults, setShowResults] = useState(false);
@@ -98,7 +96,7 @@ export default function MaintenanceWizard() {
   const runAnalysis = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     setError(null);
-    setResults({ functions: null, failureModes: null, assessment: null, tasks: null, plan: null });
+    setResults({ functions: null, failureModes: null, assessment: null, plan: null });
     setShowResults(true);
 
     try {
@@ -113,10 +111,6 @@ export default function MaintenanceWizard() {
       setCurrentStep("assessment");
       const assess = await getConsequenceAssessmentAction({ failureModes: fModes });
       setResults(prev => ({ ...prev, assessment: assess }));
-      
-      setCurrentStep("tasks");
-      const suggestedTasks = await getMaintenanceTasksAction({ equipmentName: values.equipmentTag, failureModes: fModes });
-      setResults(prev => ({ ...prev, tasks: suggestedTasks.maintenanceTasks }));
 
       setCurrentStep("plan");
       const finalPlan = await generateFinalPlanAction({
@@ -281,31 +275,15 @@ export default function MaintenanceWizard() {
             >
                 {results.assessment && <div className="prose prose-sm prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: results.assessment.replace(/\n/g, '<br />') }} />}
             </StepCard>
-
             <StepCard
                 icon={<Wrench />}
-                title="Tarefas de Manutenção Sugeridas"
-                isCurrent={currentStep === 'tasks' && isLoading}
-                isCompleted={!!results.tasks}
-                hasError={!!error && !results.tasks}
+                title="Plano de Manutenção Final"
+                isCurrent={currentStep === 'plan' && isLoading}
+                isCompleted={!!results.plan}
+                hasError={!!error && !results.plan}
             >
-                {results.tasks && (
-                    <div className="space-y-4">
-                        {results.tasks.map((task, i) => (
-                            <div key={i} className="p-4 border border-border bg-secondary/50 rounded-lg">
-                                <h4 className="font-semibold text-primary">{task.task}</h4>
-                                <p className="text-sm text-muted-foreground font-mono mt-1">{task.explanation}</p>
-                                <div className="flex gap-4 mt-3 text-xs font-mono">
-                                    <span><strong className="text-foreground/80">Tipo:</strong> {task.type}</span>
-                                    <span><strong className="text-foreground/80">Frequência:</strong> {task.frequency}</span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
+               {results.plan && <PlanDisplay plan={results.plan} equipmentTag={form.getValues("equipmentTag")} />}
             </StepCard>
-
-            {results.plan && <PlanDisplay plan={results.plan} equipmentTag={form.getValues("equipmentTag")} />}
         </div>
       )}
     </div>
