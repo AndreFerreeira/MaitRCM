@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Download, FileText } from "lucide-react";
 import { useMemo } from "react";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface PlanDisplayProps {
   plan: string;
@@ -14,7 +16,9 @@ interface PlanDisplayProps {
 export default function PlanDisplay({ plan, equipmentTag }: PlanDisplayProps) {
 
   const handleExport = () => {
-    const blob = new Blob([plan], { type: 'text/markdown;charset=utf-8' });
+    // Limpa os cabeçalhos para uma exportação mais limpa
+    const cleanPlan = plan.replace(/^(##\s*)/gm, '');
+    const blob = new Blob([cleanPlan], { type: 'text/markdown;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -27,10 +31,10 @@ export default function PlanDisplay({ plan, equipmentTag }: PlanDisplayProps) {
 
   const planSections = useMemo(() => {
     if (!plan) return [];
-    // Divide por cabeçalhos markdown H2 (##)
-    return plan.split(/(?=^##\s)/m).filter(Boolean).map((section, index) => {
+    // Divide por cabeçalhos markdown H2 (##) e remove espaços em branco
+    return plan.split(/(?=^##\s)/m).filter(s => s.trim()).map((section, index) => {
       const lines = section.trim().split('\n');
-      const title = lines[0].replace('## ', '').trim();
+      const title = lines[0].replace(/##\s*/, '').trim();
       const content = lines.slice(1).join('\n').trim();
       return { id: `section-${index}`, title, content };
     });
@@ -60,19 +64,19 @@ export default function PlanDisplay({ plan, equipmentTag }: PlanDisplayProps) {
           <Accordion type="multiple" className="w-full" defaultValue={planSections.map(s => s.id)}>
             {planSections.map(section => (
               <AccordionItem value={section.id} key={section.id} className="border-border">
-                <AccordionTrigger className="text-lg font-semibold hover:no-underline text-foreground/90">{section.title}</AccordionTrigger>
+                <AccordionTrigger className="text-lg font-semibold hover:no-underline text-foreground/90 text-left">{section.title}</AccordionTrigger>
                 <AccordionContent>
-                  <div className="whitespace-pre-wrap font-mono text-sm leading-relaxed prose prose-sm prose-invert max-w-none">
-                    {section.content}
+                  <div className="prose prose-sm prose-invert max-w-none text-gray-300">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{section.content}</ReactMarkdown>
                   </div>
                 </AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>
         ) : (
-          <div className="whitespace-pre-wrap font-mono text-sm leading-relaxed prose prose-sm prose-invert max-w-none">
-            {plan}
-          </div>
+           <div className="prose prose-sm prose-invert max-w-none text-gray-300">
+             <ReactMarkdown remarkPlugins={[remarkGfm]}>{plan}</ReactMarkdown>
+           </div>
         )}
       </CardContent>
     </Card>

@@ -24,6 +24,8 @@ import StepCard from "./step-card";
 import PlanDisplay from "./plan-display";
 import { type SuggestMaintenanceTasksOutput } from "@/ai/flows/suggest-maintenance-tasks";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const formSchema = z.object({
   equipmentTag: z.string().min(1, "A tag do equipamento é obrigatória."),
@@ -288,7 +290,11 @@ export default function MaintenanceWizard() {
                 hasError={!!error && currentStep === 'assessment'}
                 isLoading={isLoading}
             >
-                {results.assessment && <div className="prose prose-sm prose-invert max-w-none text-gray-300" dangerouslySetInnerHTML={{ __html: results.assessment.replace(/\n/g, '<br />') }} />}
+                {results.assessment && 
+                  <div className="prose prose-sm prose-invert max-w-none text-gray-300">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{results.assessment}</ReactMarkdown>
+                  </div>
+                }
             </StepCard>
             <StepCard
                 icon={<AlertTriangle />}
