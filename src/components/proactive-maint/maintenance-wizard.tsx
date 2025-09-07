@@ -20,13 +20,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { getFunctionsAction, getFailureModesAction, getConsequenceAssessmentAction, getMaintenanceTasksAction, generateFinalPlanAction } from "@/app/actions";
 import type { SuggestMaintenanceTasksOutput } from "@/ai/flows/suggest-maintenance-tasks";
-import { Loader2, Settings, ListChecks, ShieldAlert, ClipboardList, Wrench, Zap } from "lucide-react";
+import { Loader2, Settings, ListChecks, ShieldAlert, ClipboardList, Wrench, Zap, FileText } from "lucide-react";
 import StepCard from "./step-card";
 import PlanDisplay from "./plan-display";
 
 const formSchema = z.object({
   equipmentTag: z.string().min(1, "A tag do equipamento é obrigatória."),
   equipmentDescription: z.string().min(10, "Forneça uma descrição mais detalhada."),
+  manualContent: z.string().optional(),
 });
 
 type AnalysisStep = "functions" | "failureModes" | "assessment" | "tasks" | "plan";
@@ -59,6 +60,7 @@ export default function MaintenanceWizard() {
     defaultValues: {
       equipmentTag: "",
       equipmentDescription: "",
+      manualContent: "",
     },
   });
 
@@ -125,28 +127,49 @@ export default function MaintenanceWizard() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(runAnalysis)} className="space-y-6">
+              <div className="grid md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="equipmentTag"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-muted-foreground">Tag/Nome do Equipamento</FormLabel>
+                      <FormControl>
+                        <Input placeholder="ex: PMP-001" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 <FormField
+                  control={form.control}
+                  name="equipmentDescription"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-muted-foreground">Descrição do Equipamento</FormLabel>
+                      <FormControl>
+                        <Input placeholder="ex: Bomba centrífuga..." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
               <FormField
                 control={form.control}
-                name="equipmentTag"
+                name="manualContent"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-muted-foreground">Tag/Nome do Equipamento</FormLabel>
+                    <FormLabel className="text-muted-foreground flex items-center gap-2">
+                      <FileText className="w-4 h-4"/>
+                      Informações Adicionais (Opcional)
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="ex: PMP-001" {...field} />
+                      <Textarea placeholder="Cole aqui o conteúdo de manuais, procedimentos ou informações relevantes..." {...field} rows={6}/>
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="equipmentDescription"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-muted-foreground">Descrição do Equipamento</FormLabel>
-                    <FormControl>
-                      <Textarea placeholder="ex: Bomba centrífuga para circulação de líquido de arrefecimento" {...field} rows={3}/>
-                    </FormControl>
+                     <FormDescription>
+                      Quanto mais detalhes você fornecer, mais preciso será o plano gerado.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}

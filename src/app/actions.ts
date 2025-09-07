@@ -72,6 +72,7 @@ export async function generateFinalPlanAction(data: {
   equipmentFunctions: string;
   failureModes: string;
   consequenceAssessment: string;
+  manualContent?: string;
 }): Promise<GenerateMaintenancePlanOutput> {
   return await generateMaintenancePlan(data);
 }
