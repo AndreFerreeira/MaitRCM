@@ -20,7 +20,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { getFunctionsAction, getFailureModesAction, getConsequenceAssessmentAction, getMaintenanceTasksAction, generateFinalPlanAction } from "@/app/actions";
 import type { SuggestMaintenanceTasksOutput } from "@/ai/flows/suggest-maintenance-tasks";
-import { Loader2, Settings, ListChecks, ShieldAlert, ClipboardList, Wrench } from "lucide-react";
+import { Loader2, Settings, ListChecks, ShieldAlert, ClipboardList, Wrench, Zap } from "lucide-react";
 import StepCard from "./step-card";
 import PlanDisplay from "./plan-display";
 
@@ -76,14 +76,14 @@ export default function MaintenanceWizard() {
       setCurrentStep("failureModes");
       const fModes = await getFailureModesAction({ equipmentName: values.equipmentTag, functions: funcs.functions });
       setResults(prev => ({ ...prev, failureModes: fModes }));
-
-      setCurrentStep("tasks");
-      const suggestedTasks = await getMaintenanceTasksAction({ equipmentName: values.equipmentTag, failureModes: fModes });
-      setResults(prev => ({ ...prev, tasks: suggestedTasks.maintenanceTasks }));
       
       setCurrentStep("assessment");
       const assess = await getConsequenceAssessmentAction({ failureModes: fModes });
       setResults(prev => ({ ...prev, assessment: assess }));
+      
+      setCurrentStep("tasks");
+      const suggestedTasks = await getMaintenanceTasksAction({ equipmentName: values.equipmentTag, failureModes: fModes });
+      setResults(prev => ({ ...prev, tasks: suggestedTasks.maintenanceTasks }));
 
       setCurrentStep("plan");
       const finalPlan = await generateFinalPlanAction({
@@ -110,13 +110,13 @@ export default function MaintenanceWizard() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
-      <Card>
+      <Card className="bg-card/50 border-white/10">
         <CardHeader>
           <div className="flex items-center gap-3">
-            <Settings className="h-8 w-8 text-primary" />
+            <Settings className="h-8 w-8 text-accent" />
             <div>
-              <CardTitle className="text-2xl font-headline">Maintenance Plan Generator</CardTitle>
-              <CardDescription>Start by providing details about your equipment.</CardDescription>
+              <CardTitle className="text-2xl font-headline tracking-tighter">AI Maintenance Planner</CardTitle>
+              <CardDescription>Describe your equipment to generate a comprehensive maintenance plan.</CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -128,7 +128,7 @@ export default function MaintenanceWizard() {
                 name="equipmentTag"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Equipment Tag/Name</FormLabel>
+                    <FormLabel className="text-accent">Equipment Tag/Name</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g., PMP-001" {...field} />
                     </FormControl>
@@ -142,7 +142,7 @@ export default function MaintenanceWizard() {
                 name="equipmentDescription"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Equipment Description</FormLabel>
+                    <FormLabel className="text-accent">Equipment Description</FormLabel>
                     <FormControl>
                       <Textarea placeholder="e.g., Centrifugal pump for coolant circulation" {...field} rows={3}/>
                     </FormControl>
@@ -151,14 +151,17 @@ export default function MaintenanceWizard() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" disabled={isLoading} size="lg" className="w-full md:w-auto">
+              <Button type="submit" disabled={isLoading} size="lg" className="w-full md:w-auto bg-accent text-accent-foreground hover:bg-accent/90">
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Analyzing...
                   </>
                 ) : (
-                  "Generate Maintenance Plan"
+                  <>
+                  <Zap className="mr-2 h-4 w-4" />
+                  Generate Maintenance Plan
+                  </>
                 )}
               </Button>
             </form>
@@ -176,7 +179,7 @@ export default function MaintenanceWizard() {
                 hasError={!!error && !results.functions}
             >
                 {results.functions && (
-                    <ul className="list-disc pl-5 space-y-1">
+                    <ul className="list-disc pl-5 space-y-1 font-mono text-sm">
                         {results.functions.map((func, i) => <li key={i}>{func}</li>)}
                     </ul>
                 )}
@@ -189,7 +192,7 @@ export default function MaintenanceWizard() {
                 hasError={!!error && !results.failureModes}
             >
                 {results.failureModes && (
-                     <ul className="list-disc pl-5 space-y-1">
+                     <ul className="list-disc pl-5 space-y-1 font-mono text-sm">
                         {results.failureModes.map((mode, i) => <li key={i}>{mode}</li>)}
                     </ul>
                 )}
@@ -201,7 +204,7 @@ export default function MaintenanceWizard() {
                 isCompleted={!!results.assessment}
                 hasError={!!error && !results.assessment}
             >
-                {results.assessment && <div className="whitespace-pre-wrap text-sm">{results.assessment}</div>}
+                {results.assessment && <div className="prose prose-sm prose-invert max-w-none">{results.assessment}</div>}
             </StepCard>
 
             <StepCard
@@ -214,12 +217,12 @@ export default function MaintenanceWizard() {
                 {results.tasks && (
                     <div className="space-y-4">
                         {results.tasks.map((task, i) => (
-                            <div key={i} className="p-3 border rounded-lg">
-                                <h4 className="font-semibold">{task.task}</h4>
-                                <p className="text-sm text-muted-foreground">{task.explanation}</p>
-                                <div className="flex gap-4 mt-2 text-xs">
-                                    <span><strong>Type:</strong> {task.type}</span>
-                                    <span><strong>Frequency:</strong> {task.frequency}</span>
+                            <div key={i} className="p-3 border border-white/10 bg-black/20 rounded-lg">
+                                <h4 className="font-semibold text-accent">{task.task}</h4>
+                                <p className="text-sm text-muted-foreground font-mono">{task.explanation}</p>
+                                <div className="flex gap-4 mt-2 text-xs font-mono">
+                                    <span><strong className="text-foreground/80">Type:</strong> {task.type}</span>
+                                    <span><strong className="text-foreground/80">Frequency:</strong> {task.frequency}</span>
                                 </div>
                             </div>
                         ))}

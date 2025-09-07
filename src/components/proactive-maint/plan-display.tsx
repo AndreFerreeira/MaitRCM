@@ -37,17 +37,17 @@ export default function PlanDisplay({ plan, equipmentTag }: PlanDisplayProps) {
   }, [plan]);
 
   return (
-    <Card className="bg-gradient-to-br from-card to-secondary/30">
+    <Card className="bg-gradient-to-br from-primary/10 to-background border-primary/20">
       <CardHeader>
         <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
           <div className="flex items-center gap-3">
-             <FileText className="h-8 w-8 text-primary" />
+             <FileText className="h-8 w-8 text-accent" />
             <div>
-              <CardTitle className="text-2xl font-headline">Your Maintenance Plan</CardTitle>
-              <CardDescription>The detailed maintenance plan for your equipment is ready.</CardDescription>
+              <CardTitle className="text-2xl font-headline tracking-tighter">Your Maintenance Plan</CardTitle>
+              <CardDescription>The detailed maintenance plan is ready for export.</CardDescription>
             </div>
           </div>
-          <Button onClick={handleExport} variant="outline" className="shrink-0">
+          <Button onClick={handleExport} variant="outline" className="shrink-0 bg-accent text-accent-foreground hover:bg-accent/90 border-accent/50">
             <Download className="mr-2 h-4 w-4" />
             Export Plan
           </Button>
@@ -55,12 +55,12 @@ export default function PlanDisplay({ plan, equipmentTag }: PlanDisplayProps) {
       </CardHeader>
       <CardContent>
         {planSections.length > 0 ? (
-          <Accordion type="multiple" className="w-full" defaultValue={[planSections[0].id]}>
+          <Accordion type="multiple" className="w-full" defaultValue={planSections.map(s => s.id)}>
             {planSections.map(section => (
-              <AccordionItem value={section.id} key={section.id}>
-                <AccordionTrigger className="text-lg font-semibold hover:no-underline">{section.title}</AccordionTrigger>
+              <AccordionItem value={section.id} key={section.id} className="border-white/10">
+                <AccordionTrigger className="text-lg font-semibold hover:no-underline text-accent">{section.title}</AccordionTrigger>
                 <AccordionContent>
-                  <div className="whitespace-pre-wrap text-sm leading-relaxed prose prose-sm max-w-none">
+                  <div className="whitespace-pre-wrap font-mono text-sm leading-relaxed prose prose-sm prose-invert max-w-none">
                     {section.content}
                   </div>
                 </AccordionContent>
@@ -68,7 +68,7 @@ export default function PlanDisplay({ plan, equipmentTag }: PlanDisplayProps) {
             ))}
           </Accordion>
         ) : (
-          <div className="whitespace-pre-wrap text-sm leading-relaxed prose prose-sm max-w-none">
+          <div className="whitespace-pre-wrap font-mono text-sm leading-relaxed prose prose-sm prose-invert max-w-none">
             {plan}
           </div>
         )}
