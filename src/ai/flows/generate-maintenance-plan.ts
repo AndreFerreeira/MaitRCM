@@ -10,6 +10,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { maintenanceDocumentRetriever } from '../tools/maintenance-document-retriever';
 
 const GenerateMaintenancePlanInputSchema = z.object({
   equipmentTag: z.string().describe('A tag do equipamento.'),
@@ -35,9 +36,10 @@ const prompt = ai.definePrompt({
   name: 'generateMaintenancePlanPrompt',
   input: {schema: GenerateMaintenancePlanInputSchema},
   output: {schema: GenerateMaintenancePlanOutputSchema},
+  tools: [maintenanceDocumentRetriever],
   prompt: `Você é um engenheiro de manutenção especialista.
 
-Você usará as informações fornecidas para gerar um plano de manutenção detalhado para o equipamento.
+Você usará as informações fornecidas para gerar um plano de manutenção detalhado para o equipamento. Sempre que possível, utilize a ferramenta 'maintenanceDocumentRetriever' para buscar manuais e relatórios que possam fornecer valores, procedimentos e frequências específicas para as tarefas de manutenção. Incorpore essas informações encontradas no plano final.
 
 Tag do Equipamento: {{{equipmentTag}}}
 Descrição do Equipamento: {{{equipmentDescription}}}
