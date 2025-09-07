@@ -46,7 +46,7 @@ Você usará as informações fornecidas para gerar um plano de manutenção det
 Use o conteúdo ou a imagem fornecida pelo usuário como a principal fonte de verdade para criar o plano de manutenção. Extraia procedimentos, frequências e especificações diretamente dele.
 Conteúdo Fornecido:
 ---
-{{#if (manualContent.startsWith "data:image")}}
+{{#if (startsWith manualContent "data:image")}}
 Imagem do usuário: {{media url=manualContent}}
 {{else}}
 Texto do usuário:
@@ -55,9 +55,9 @@ Texto do usuário:
 ---
 {{/if}}
 
-Se nenhuma informação for fornecida no conteúdo do usuário ou se as informações estiverem incompletas, utilize a ferramenta 'maintenanceDocumentRetriever' para buscar manuais e relatórios que possam fornecer valores, procedimentos e frequências específicas. Incorpore essas informações encontradas no plano final.
+Se nenhuma informação for fornecida no conteúdo do usuário ou se as informações estiverem incompletas, você PODE usar a ferramenta 'maintenanceDocumentRetriever' para buscar manuais que possam fornecer valores.
 
-Se nenhuma fonte de dados (conteúdo do usuário ou ferramenta de busca) fornecer informações suficientes, use seu conhecimento especializado para criar um plano de manutenção genérico, mas eficaz.
+Se nenhuma fonte de dados (conteúdo do usuário ou ferramenta de busca) fornecer informações suficientes, use seu conhecimento especializado para criar um plano de manutenção genérico, mas eficaz, com base nos dados do equipamento abaixo.
 
 Dados do Equipamento:
 - Tag: {{{equipmentTag}}}
@@ -66,7 +66,7 @@ Dados do Equipamento:
 - Modos de Falha: {{{failureModes}}}
 - Avaliação de Consequências: {{{consequenceAssessment}}}
 
-Gere um plano de manutenção detalhado em português, especificando o tipo de manutenção (preventiva, corretiva, etc.), frequência e uma breve explicação de como realizar cada tarefa.
+Gere um plano de manutenção detalhado em português, especificando o tipo de manutenção (preventiva, corretiva, etc.), frequência e uma breve explicação de como realizar cada tarefa. O plano deve ser bem estruturado em formato markdown.
 `,
 });
 
