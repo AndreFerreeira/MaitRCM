@@ -8,6 +8,7 @@ interface StepCardProps {
   isCurrent: boolean;
   isCompleted: boolean;
   hasError: boolean;
+  isLoading: boolean;
   children: ReactNode;
 }
 
@@ -17,29 +18,32 @@ export default function StepCard({
   isCurrent,
   isCompleted,
   hasError,
+  isLoading,
   children,
 }: StepCardProps) {
-  const StatusIcon = () => {
-    if (isCurrent) return <Loader2 className="h-5 w-5 text-primary animate-spin" />;
-    if (hasError) return <AlertCircle className="h-5 w-5 text-destructive" />;
+  const getStatusIcon = () => {
+    if (isCurrent && isLoading) return <Loader2 className="h-5 w-5 text-blue-400 animate-spin" />;
+    if (hasError) return <AlertCircle className="h-5 w-5 text-red-500" />;
     if (isCompleted) return <CheckCircle2 className="h-5 w-5 text-green-500" />;
-    return <CircleDashed className="h-5 w-5 text-muted-foreground" />;
+    return <CircleDashed className="h-5 w-5 text-slate-600" />;
   };
 
+  const showContent = isCompleted || (hasError && !isLoading);
+
   return (
-    <Card className={`transition-all duration-500 border-border bg-secondary/20 ${isCompleted ? 'opacity-100' : hasError ? 'opacity-100' : isCurrent ? 'opacity-100' : 'opacity-50'}`}>
+    <Card className={`transition-all duration-500 bg-slate-900/50 border border-slate-800 ${isCompleted ? 'opacity-100' : hasError ? 'opacity-100' : isCurrent ? 'opacity-100' : 'opacity-60'}`}>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-3 text-xl font-headline uppercase tracking-wider text-foreground/90">
-            {icon}
+          <CardTitle className="flex items-center gap-3 text-lg font-headline uppercase tracking-wider text-slate-300">
+            <span className="text-blue-400">{icon}</span>
             {title}
           </CardTitle>
-          <StatusIcon />
+          {getStatusIcon()}
         </div>
       </CardHeader>
-      {(isCompleted || hasError) && (
-          <CardContent>
-            {hasError ? <p className="text-destructive-foreground bg-destructive/80 p-3 rounded-md font-mono">A análise para esta etapa falhou.</p> : children}
+      {showContent && (
+          <CardContent className="pt-2">
+            {hasError ? <p className="text-red-400 bg-red-900/30 p-3 rounded-md font-mono text-sm">A análise para esta etapa falhou.</p> : children}
           </CardContent>
       )}
     </Card>
