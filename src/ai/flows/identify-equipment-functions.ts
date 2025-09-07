@@ -32,14 +32,16 @@ const prompt = ai.definePrompt({
   name: 'identifyEquipmentFunctionsPrompt',
   input: {schema: IdentifyEquipmentFunctionsInputSchema},
   output: {schema: IdentifyEquipmentFunctionsOutputSchema},
-  prompt: `Você é um técnico de manutenção especialista encarregado de identificar as funções de um equipamento.
+  prompt: `Você é um engenheiro de manutenção sênior encarregado de detalhar as funções de um equipamento.
 
-  Com base na tag e na descrição do equipamento fornecidas, liste em português as principais funções que o equipamento desempenha.
+  Com base na tag e na descrição fornecidas, descreva em português cada uma das funções primárias e secundárias do equipamento. Para cada função, explique brevemente seu propósito e importância no processo geral.
 
-  Tag do Equipamento: {{{equipmentTag}}}
-  Descrição do Equipamento: {{{equipmentDescription}}}
+  **Tag do Equipamento:** {{{equipmentTag}}}
+  **Descrição do Equipamento:** {{{equipmentDescription}}}
 
-  Funções:`,
+  Seja detalhista e técnico na sua resposta.
+
+  **Funções Detalhadas:**`,
 });
 
 const identifyEquipmentFunctionsFlow = ai.defineFlow(

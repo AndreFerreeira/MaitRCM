@@ -21,14 +21,14 @@ const failureModePrompt = ai.definePrompt({
   name: 'failureModePrompt',
   input: { schema: z.object({ equipmentName: z.string(), functions: z.array(z.string()) }) },
   output: { schema: FailureModesSchema },
-  prompt: `Você é um engenheiro de confiabilidade especialista. Para um equipamento chamado "{{equipmentName}}" que executa as seguintes funções, liste os modos de falha mais prováveis.
+  prompt: `Você é um engenheiro de confiabilidade especialista em FMEA (Análise de Modos e Efeitos de Falha). Para o equipamento "{{equipmentName}}" que executa as seguintes funções, liste os modos de falha mais prováveis e tecnicamente relevantes.
 
-  Funções:
-  {{#each functions}}
-  - {{this}}
-  {{/each}}
-  
-  Por favor, forneça apenas a lista de modos de falha.`,
+**Funções:**
+{{#each functions}}
+- {{this}}
+{{/each}}
+
+Para cada função, analise e descreva os modos de falha potenciais. Seja específico e detalhado, considerando a causa raiz e o efeito imediato da falha.`,
 });
 
 export async function getFailureModesAction(data: { equipmentName: string; functions: string[] }): Promise<string[]> {
@@ -45,12 +45,20 @@ const consequenceAssessmentPrompt = ai.definePrompt({
   name: 'consequenceAssessmentPrompt',
   input: { schema: z.object({ failureModes: z.array(z.string()) }) },
   output: { schema: ConsequenceAssessmentSchema },
-  prompt: `Para os seguintes modos de falha, forneça uma avaliação detalhada de suas potenciais consequências. Considere segurança, impacto ambiental, perda de produção e custos de reparo. Estruture a saída como um texto legível em formato markdown, usando títulos e listas para organizar as informações de forma clara para cada modo de falha.
+  prompt: `Para os seguintes modos de falha, forneça uma avaliação de consequências detalhada e aprofundada. Estruture a saída em formato markdown, usando títulos e listas para clareza.
 
-  Modos de Falha:
-  {{#each failureModes}}
-  - {{this}}
-  {{/each}}
+**Modos de Falha a Avaliar:**
+{{#each failureModes}}
+- {{this}}
+{{/each}}
+
+Para cada modo de falha, detalhe as consequências potenciais nas seguintes dimensões:
+*   **Segurança e Saúde Ocupacional:** Riscos para operadores, equipe de manutenção e outros (ex: lesões, exposição a perigos).
+*   **Impacto Ambiental:** Consequências para o meio ambiente (ex: vazamentos, emissões, contaminação).
+*   **Impacto na Produção:** Efeitos na produção (ex: parada de linha, perda de qualidade, redução de capacidade).
+*   **Custos Associados:** Custos diretos e indiretos (ex: custo de reparo, perda de produção, multas, danos à reputação).
+
+Seja exaustivo e técnico em sua avaliação.
   `
 });
 

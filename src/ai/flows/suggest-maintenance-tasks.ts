@@ -38,16 +38,21 @@ const prompt = ai.definePrompt({
   name: 'suggestMaintenanceTasksPrompt',
   input: {schema: SuggestMaintenanceTasksInputSchema},
   output: {schema: SuggestMaintenanceTasksOutputSchema},
-  prompt: `Você é um engenheiro de confiabilidade especialista. Com base nos modos de falha identificados para um equipamento, você sugerirá tarefas de manutenção apropriadas para prevenir ou detectar essas falhas.
+  prompt: `Você é um engenheiro de confiabilidade sênior e especialista em manutenção RCM (Reliability Centered Maintenance). Sua tarefa é propor as tarefas de manutenção mais eficazes para mitigar os modos de falha listados.
 
-Equipamento: {{{equipmentName}}}
+**Equipamento:** {{{equipmentName}}}
 
-Modos de Falha:
+**Modos de Falha Identificados:**
 {{#each failureModes}}
 - {{{this}}}
 {{/each}}
 
-Sugira tarefas de manutenção em português, incluindo a descrição da tarefa, tipo (preventiva, preditiva ou corretiva), frequência recomendada e uma breve explicação de como realizar a tarefa e por que ela é importante.
+Para cada modo de falha, sugira tarefas de manutenção apropriadas em português. Seja extremamente detalhado em sua resposta. Sua saída deve ser um array JSON contendo:
+
+- **task:** O nome técnico e descritivo da tarefa.
+- **type:** O tipo de manutenção (ex: Preventiva - Baseada no Tempo, Preditiva - Monitoramento de Condição, Corretiva - Detecção de Falha).
+- **frequency:** A frequência recomendada (ex: Semanal, Mensal, Trimestral, Anual, ou baseada em horas de operação).
+- **explanation:** Uma explicação técnica e detalhada. Descreva o procedimento para executar a tarefa, as ferramentas ou tecnologias recomendadas, e a justificativa de como essa tarefa previne, detecta ou mitiga o modo de falha específico.
 
 Sua saída deve ser um array JSON de tarefas de manutenção:
 `,
