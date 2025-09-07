@@ -60,7 +60,7 @@ export default function PlanDisplay({ plan, equipmentTag }: PlanDisplayProps) {
           <Accordion type="multiple" className="w-full" defaultValue={planSections.map(s => s.id)}>
             {planSections.map(section => (
               <AccordionItem value={section.id} key={section.id} className="border-border">
-                <AccordionTrigger className="text-lg font-semibold hover:no-underline text-primary">{section.title}</AccordionTrigger>
+                <AccordionTrigger className="text-lg font-semibold hover:no-underline text-foreground/90">{section.title}</AccordionTrigger>
                 <AccordionContent>
                   <div className="whitespace-pre-wrap font-mono text-sm leading-relaxed prose prose-sm prose-invert max-w-none">
                     {section.content}
