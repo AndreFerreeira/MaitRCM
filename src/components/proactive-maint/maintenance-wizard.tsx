@@ -151,15 +151,15 @@ export default function MaintenanceWizard() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
-      <Card className="border-0 bg-gradient-to-br from-gray-950 via-gray-900 to-black shadow-2xl shadow-blue-500/10">
+      <Card className="border-0 bg-gradient-to-br from-slate-950 via-gray-900 to-black shadow-2xl shadow-blue-500/10">
         <CardHeader>
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-lg bg-blue-600/10 flex items-center justify-center border border-blue-500/30">
               <Wrench className="h-6 w-6 text-blue-400" />
             </div>
             <div>
-              <CardTitle className="text-3xl font-headline tracking-wider text-gray-50">Planejador de Manutenção Preditiva</CardTitle>
-              <CardDescription className="text-gray-400">Gere um plano de manutenção RCM completo usando IA.</CardDescription>
+              <CardTitle className="text-3xl font-headline tracking-wider text-slate-50">Planejador de Manutenção Preditiva</CardTitle>
+              <CardDescription className="text-slate-400">Gere um plano de manutenção RCM completo usando IA.</CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -172,7 +172,7 @@ export default function MaintenanceWizard() {
                   name="equipmentTag"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-400">Tag/Nome do Equipamento</FormLabel>
+                      <FormLabel className="text-slate-400">Tag/Nome do Equipamento</FormLabel>
                       <FormControl>
                         <Input placeholder="ex: PMP-001" {...field} />
                       </FormControl>
@@ -185,7 +185,7 @@ export default function MaintenanceWizard() {
                   name="equipmentDescription"
                   render={({ field }) => (
                     <FormItem className="md:col-span-2">
-                      <FormLabel className="text-gray-400">Descrição do Equipamento</FormLabel>
+                      <FormLabel className="text-slate-400">Descrição do Equipamento</FormLabel>
                       <FormControl>
                         <Textarea rows={4} placeholder="ex: Bomba centrífuga para circulação de água de resfriamento, motor de 50CV, localizada no setor 3." {...field} />
                       </FormControl>
@@ -200,7 +200,7 @@ export default function MaintenanceWizard() {
                 name="manualContent"
                 render={() => (
                   <FormItem>
-                     <FormLabel className="text-gray-400 flex items-center gap-2">
+                     <FormLabel className="text-slate-400 flex items-center gap-2">
                       <FileImage className="w-4 h-4"/>
                       Anexar Imagem (Opcional)
                     </FormLabel>
@@ -217,7 +217,7 @@ export default function MaintenanceWizard() {
                             onChange={handleFileChange} 
                         />
                         {selectedFile && (
-                            <div className="flex items-center gap-2 p-2 rounded-md bg-gray-800/50 text-sm">
+                            <div className="flex items-center gap-2 p-2 rounded-md bg-slate-800/50 text-sm">
                                 <span>{selectedFile.name}</span>
                                 <Button type="button" variant="ghost" size="icon" className="h-6 w-6" onClick={removeFile}>
                                     <X className="h-4 w-4" />
@@ -226,7 +226,7 @@ export default function MaintenanceWizard() {
                         )}
                        </div>
                     </FormControl>
-                     <FormDescription className="text-gray-500">
+                     <FormDescription className="text-slate-500">
                       Anexe uma imagem do equipamento, placa de especificações ou manual.
                     </FormDescription>
                     <FormMessage />
@@ -263,7 +263,7 @@ export default function MaintenanceWizard() {
                 isLoading={isLoading}
             >
                 {results.functions && (
-                    <ul className="list-disc pl-5 space-y-1 font-mono text-sm text-gray-300">
+                    <ul className="list-disc pl-5 space-y-1 font-mono text-sm text-slate-300">
                         {results.functions.map((func, i) => <li key={i}>{func}</li>)}
                     </ul>
                 )}
@@ -277,7 +277,7 @@ export default function MaintenanceWizard() {
                 isLoading={isLoading}
             >
                 {results.failureModes && (
-                     <ul className="list-disc pl-5 space-y-1 font-mono text-sm text-gray-300">
+                     <ul className="list-disc pl-5 space-y-1 font-mono text-sm text-slate-300">
                         {results.failureModes.map((mode, i) => <li key={i}>{mode}</li>)}
                     </ul>
                 )}
@@ -291,7 +291,7 @@ export default function MaintenanceWizard() {
                 isLoading={isLoading}
             >
                 {results.assessment && 
-                  <div className="prose prose-sm prose-invert max-w-none text-gray-300">
+                  <div className="prose prose-sm prose-invert max-w-none text-slate-300">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{results.assessment}</ReactMarkdown>
                   </div>
                 }
@@ -312,10 +312,10 @@ export default function MaintenanceWizard() {
                                {task.task}
                              </AccordionTrigger>
                              <AccordionContent>
-                               <div className="font-mono text-sm text-gray-300 space-y-2 pt-2">
-                                 <p><strong className="text-gray-500 font-semibold">Tipo:</strong> {task.type}</p>
-                                 <p><strong className="text-gray-500 font-semibold">Frequência:</strong> {task.frequency}</p>
-                                 <p className="pt-2 mt-2 border-t border-slate-700/50"><strong className="text-gray-500 font-semibold">Detalhes:</strong> {task.explanation}</p>
+                               <div className="font-mono text-sm text-slate-300 space-y-2 pt-2">
+                                 <p><strong className="text-slate-500 font-semibold">Tipo:</strong> {task.type}</p>
+                                 <p><strong className="text-slate-500 font-semibold">Frequência:</strong> {task.frequency}</p>
+                                 <p className="pt-2 mt-2 border-t border-slate-700/50"><strong className="text-slate-500 font-semibold">Detalhes:</strong> {task.explanation}</p>
                                </div>
                              </AccordionContent>
                            </AccordionItem>

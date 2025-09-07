@@ -64,9 +64,9 @@ export default function PlanDisplay({ plan, equipmentTag }: PlanDisplayProps) {
           <Accordion type="multiple" className="w-full" defaultValue={planSections.map(s => s.id)}>
             {planSections.map(section => (
               <AccordionItem value={section.id} key={section.id} className="border-border">
-                <AccordionTrigger className="text-lg font-semibold hover:no-underline text-foreground/90 text-left">{section.title}</AccordionTrigger>
+                <AccordionTrigger className="text-lg font-semibold hover:no-underline text-slate-100 text-left">{section.title}</AccordionTrigger>
                 <AccordionContent>
-                  <div className="prose prose-sm prose-invert max-w-none text-gray-300">
+                  <div className="prose prose-sm prose-invert max-w-none text-slate-300">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{section.content}</ReactMarkdown>
                   </div>
                 </AccordionContent>
@@ -74,7 +74,7 @@ export default function PlanDisplay({ plan, equipmentTag }: PlanDisplayProps) {
             ))}
           </Accordion>
         ) : (
-           <div className="prose prose-sm prose-invert max-w-none text-gray-300">
+           <div className="prose prose-sm prose-invert max-w-none text-slate-300">
              <ReactMarkdown remarkPlugins={[remarkGfm]}>{plan}</ReactMarkdown>
            </div>
         )}
