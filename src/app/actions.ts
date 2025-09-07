@@ -6,28 +6,28 @@ import { suggestMaintenanceTasks, type SuggestMaintenanceTasksOutput } from '@/a
 import { generateMaintenancePlan, type GenerateMaintenancePlanOutput } from '@/ai/flows/generate-maintenance-plan';
 import { z } from 'zod';
 
-// Step 1: Identify Equipment Functions
+// Etapa 1: Identificar Funções do Equipamento
 export async function getFunctionsAction(data: { equipmentTag: string; equipmentDescription: string }): Promise<IdentifyEquipmentFunctionsOutput> {
   return await identifyEquipmentFunctions(data);
 }
 
-// Step 2: Failure Mode Analysis
+// Etapa 2: Análise de Modos de Falha
 const FailureModesSchema = z.object({
-  failureModes: z.array(z.string()).describe("A list of probable failure modes based on the equipment's functions."),
+  failureModes: z.array(z.string()).describe("Uma lista de modos de falha prováveis com base nas funções do equipamento."),
 });
 
 const failureModePrompt = ai.definePrompt({
   name: 'failureModePrompt',
   input: { schema: z.object({ equipmentName: z.string(), functions: z.array(z.string()) }) },
   output: { schema: FailureModesSchema },
-  prompt: `You are an expert reliability engineer. For a piece of equipment named "{{equipmentName}}" which performs the following functions, list the most probable failure modes.
+  prompt: `Você é um engenheiro de confiabilidade especialista. Para um equipamento chamado "{{equipmentName}}" que executa as seguintes funções, liste os modos de falha mais prováveis.
 
-  Functions:
+  Funções:
   {{#each functions}}
   - {{this}}
   {{/each}}
   
-  Please provide only the list of failure modes.`,
+  Por favor, forneça apenas a lista de modos de falha.`,
 });
 
 export async function getFailureModesAction(data: { equipmentName: string; functions: string[] }): Promise<string[]> {
@@ -35,18 +35,18 @@ export async function getFailureModesAction(data: { equipmentName: string; funct
   return output?.failureModes || [];
 }
 
-// Step 3: Consequence Assessment
+// Etapa 3: Avaliação de Consequências
 const ConsequenceAssessmentSchema = z.object({
-  assessment: z.string().describe("A detailed assessment of consequences for the given failure modes across safety, environmental impact, production, and cost, formatted in markdown."),
+  assessment: z.string().describe("Uma avaliação detalhada das consequências para os modos de falha apresentados, abrangendo segurança, impacto ambiental, produção e custos, formatada em markdown."),
 });
 
 const consequenceAssessmentPrompt = ai.definePrompt({
   name: 'consequenceAssessmentPrompt',
   input: { schema: z.object({ failureModes: z.array(z.string()) }) },
   output: { schema: ConsequenceAssessmentSchema },
-  prompt: `For the following failure modes, provide a detailed assessment of their potential consequences. Consider safety, environmental impact, production loss, and repair costs. Structure the output as a readable text in markdown format.
+  prompt: `Para os seguintes modos de falha, forneça uma avaliação detalhada de suas potenciais consequências. Considere segurança, impacto ambiental, perda de produção e custos de reparo. Estruture a saída como um texto legível em formato markdown, usando títulos e listas para organizar as informações de forma clara para cada modo de falha.
 
-  Failure Modes:
+  Modos de Falha:
   {{#each failureModes}}
   - {{this}}
   {{/each}}
@@ -55,16 +55,16 @@ const consequenceAssessmentPrompt = ai.definePrompt({
 
 export async function getConsequenceAssessmentAction(data: { failureModes:string[] }): Promise<string> {
     const { output } = await consequenceAssessmentPrompt(data);
-    return output?.assessment || "No assessment generated.";
+    return output?.assessment || "Nenhuma avaliação gerada.";
 }
 
 
-// Step 4: Suggest Maintenance Tasks
+// Etapa 4: Sugerir Tarefas de Manutenção
 export async function getMaintenanceTasksAction(data: { equipmentName: string; failureModes: string[] }): Promise<SuggestMaintenanceTasksOutput> {
-  return await suggestMaintenanceTasks({ equipmentName: data.equipmentName, failureModes: data.failureModes });
+  return await suggestMaintenanceTasks({ equipmentName: data.equipmentName, failureModes: data.failures });
 }
 
-// Step 5: Generate Final Plan
+// Etapa 5: Gerar Plano Final
 export async function generateFinalPlanAction(data: {
   equipmentTag: string;
   equipmentDescription: string;

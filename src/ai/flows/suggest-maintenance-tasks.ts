@@ -1,34 +1,32 @@
-// This file is machine-generated - edit at your own risk!
-
 'use server';
 
 /**
- * @fileOverview This file defines a Genkit flow for suggesting maintenance tasks based on identified failure modes.
+ * @fileOverview Este arquivo define um fluxo Genkit para sugerir tarefas de manutenção com base nos modos de falha identificados.
  *
- * It includes:
- * - `suggestMaintenanceTasks`: A function to trigger the maintenance task suggestion flow.
- * - `SuggestMaintenanceTasksInput`: The input type for the suggestMaintenanceTasks function.
- * - `SuggestMaintenanceTasksOutput`: The output type for the suggestMaintenanceTasks function.
+ * Inclui:
+ * - `suggestMaintenanceTasks`: Uma função para acionar o fluxo de sugestão de tarefas de manutenção.
+ * - `SuggestMaintenanceTasksInput`: O tipo de entrada para a função suggestMaintenanceTasks.
+ * - `SuggestMaintenanceTasksOutput`: O tipo de saída para a função suggestMaintenanceTasks.
  */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const SuggestMaintenanceTasksInputSchema = z.object({
-  equipmentName: z.string().describe('The name of the equipment to analyze.'),
-  failureModes: z.array(z.string()).describe('A list of identified failure modes for the equipment.'),
+  equipmentName: z.string().describe('O nome do equipamento a ser analisado.'),
+  failureModes: z.array(z.string()).describe('Uma lista de modos de falha identificados para o equipamento.'),
 });
 export type SuggestMaintenanceTasksInput = z.infer<typeof SuggestMaintenanceTasksInputSchema>;
 
 const SuggestMaintenanceTasksOutputSchema = z.object({
   maintenanceTasks: z.array(
     z.object({
-      task: z.string().describe('A description of the maintenance task.'),
-      type: z.string().describe('The type of maintenance (preventive, predictive, corrective).'),
-      frequency: z.string().describe('The recommended frequency for the maintenance task.'),
-      explanation: z.string().describe('Explanation of how to perform the task and why it is important.'),
+      task: z.string().describe('Uma descrição da tarefa de manutenção.'),
+      type: z.string().describe('O tipo de manutenção (preventiva, preditiva, corretiva).'),
+      frequency: z.string().describe('A frequência recomendada para a tarefa de manutenção.'),
+      explanation: z.string().describe('Explicação de como realizar a tarefa e por que ela é importante.'),
     })
-  ).describe('A list of suggested maintenance tasks.'),
+  ).describe('Uma lista de tarefas de manutenção sugeridas.'),
 });
 export type SuggestMaintenanceTasksOutput = z.infer<typeof SuggestMaintenanceTasksOutputSchema>;
 
@@ -40,18 +38,18 @@ const prompt = ai.definePrompt({
   name: 'suggestMaintenanceTasksPrompt',
   input: {schema: SuggestMaintenanceTasksInputSchema},
   output: {schema: SuggestMaintenanceTasksOutputSchema},
-  prompt: `You are an expert reliability engineer. Based on the identified failure modes for a piece of equipment, you will suggest appropriate maintenance tasks to prevent or detect these failures.
+  prompt: `Você é um engenheiro de confiabilidade especialista. Com base nos modos de falha identificados para um equipamento, você sugerirá tarefas de manutenção apropriadas para prevenir ou detectar essas falhas.
 
-Equipment: {{{equipmentName}}}
+Equipamento: {{{equipmentName}}}
 
-Failure Modes:
+Modos de Falha:
 {{#each failureModes}}
 - {{{this}}}
 {{/each}}
 
-Suggest maintenance tasks, including the task description, type (preventive, predictive, or corrective), recommended frequency, and a brief explanation of how to perform the task and why it is important.
+Sugira tarefas de manutenção em português, incluindo a descrição da tarefa, tipo (preventiva, preditiva ou corretiva), frequência recomendada e uma breve explicação de como realizar a tarefa e por que ela é importante.
 
-Your output should be a JSON array of maintenance tasks:
+Sua saída deve ser um array JSON de tarefas de manutenção:
 `,
 });
 

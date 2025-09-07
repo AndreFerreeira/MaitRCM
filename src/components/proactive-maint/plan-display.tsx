@@ -18,7 +18,7 @@ export default function PlanDisplay({ plan, equipmentTag }: PlanDisplayProps) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `maintenance-plan-${equipmentTag}.md`;
+    link.download = `plano-manutencao-${equipmentTag}.md`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -27,7 +27,7 @@ export default function PlanDisplay({ plan, equipmentTag }: PlanDisplayProps) {
 
   const planSections = useMemo(() => {
     if (!plan) return [];
-    // Split by markdown H2 headers (##)
+    // Divide por cabeçalhos markdown H2 (##)
     return plan.split(/(?=^##\s)/m).filter(Boolean).map((section, index) => {
       const lines = section.trim().split('\n');
       const title = lines[0].replace('## ', '').trim();
@@ -45,13 +45,13 @@ export default function PlanDisplay({ plan, equipmentTag }: PlanDisplayProps) {
                 <FileText className="h-6 w-6 text-primary" />
              </div>
             <div>
-              <CardTitle className="text-3xl font-headline uppercase tracking-wider">Maintenance Plan</CardTitle>
-              <CardDescription>The detailed maintenance plan is ready.</CardDescription>
+              <CardTitle className="text-3xl font-headline uppercase tracking-wider">Plano de Manutenção</CardTitle>
+              <CardDescription>O plano de manutenção detalhado está pronto.</CardDescription>
             </div>
           </div>
           <Button onClick={handleExport} variant="outline" className="shrink-0">
             <Download className="mr-2 h-4 w-4" />
-            Export Plan
+            Exportar Plano
           </Button>
         </div>
       </CardHeader>

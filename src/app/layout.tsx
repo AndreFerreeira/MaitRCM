@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: 'ProactiveMaint',
-  description: 'AI-Powered Maintenance Plan Generator',
+  description: 'Gerador de Plano de Manutenção com IA',
 };
 
 export default function RootLayout({
@@ -14,7 +14,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="pt-BR" className="dark" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />

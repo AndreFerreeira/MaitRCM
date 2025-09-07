@@ -39,7 +39,7 @@ export default function StepCard({
       </CardHeader>
       {(isCompleted || hasError) && (
           <CardContent>
-            {hasError ? <p className="text-destructive-foreground bg-destructive/80 p-3 rounded-md font-mono">Analysis for this step failed.</p> : children}
+            {hasError ? <p className="text-destructive-foreground bg-destructive/80 p-3 rounded-md font-mono">A análise para esta etapa falhou.</p> : children}
           </CardContent>
       )}
     </Card>

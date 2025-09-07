@@ -1,28 +1,28 @@
 'use server';
 
 /**
- * @fileOverview Generates a maintenance plan for a given piece of equipment.
+ * @fileOverview Gera um plano de manutenção para um determinado equipamento.
  *
- * - generateMaintenancePlan - A function that generates a maintenance plan.
- * - GenerateMaintenancePlanInput - The input type for the generateMaintenancePlan function.
- * - GenerateMaintenancePlanOutput - The return type for the generateMaintenancePlan function.
+ * - generateMaintenancePlan - Uma função que gera um plano de manutenção.
+ * - GenerateMaintenancePlanInput - O tipo de entrada para a função generateMaintenancePlan.
+ * - GenerateMaintenancePlanOutput - O tipo de retorno para a função generateMaintenancePlan.
  */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const GenerateMaintenancePlanInputSchema = z.object({
-  equipmentTag: z.string().describe('The tag of the equipment.'),
-  equipmentDescription: z.string().describe('A short description of the equipment.'),
-  equipmentFunctions: z.string().describe('A list of the critical functions of the equipment.'),
-  failureModes: z.string().describe('A list of the most probable failure modes of the equipment, incorporating failure consequence.'),
-  consequenceAssessment: z.string().describe('The potential consequences of each failure mode across safety, environmental impact, production, and cost dimensions.'),
+  equipmentTag: z.string().describe('A tag do equipamento.'),
+  equipmentDescription: z.string().describe('Uma breve descrição do equipamento.'),
+  equipmentFunctions: z.string().describe('Uma lista das funções críticas do equipamento.'),
+  failureModes: z.string().describe('Uma lista dos modos de falha mais prováveis do equipamento, incorporando a consequência da falha.'),
+  consequenceAssessment: z.string().describe('As consequências potenciais de cada modo de falha nas dimensões de segurança, impacto ambiental, produção e custo.'),
 });
 
 export type GenerateMaintenancePlanInput = z.infer<typeof GenerateMaintenancePlanInputSchema>;
 
 const GenerateMaintenancePlanOutputSchema = z.object({
-  maintenancePlan: z.string().describe('A detailed maintenance plan specifying maintenance type, frequency, and a brief explanation of how to perform each task.'),
+  maintenancePlan: z.string().describe('Um plano de manutenção detalhado especificando o tipo de manutenção, frequência e uma breve explicação de como realizar cada tarefa.'),
 });
 
 export type GenerateMaintenancePlanOutput = z.infer<typeof GenerateMaintenancePlanOutputSchema>;
@@ -35,17 +35,17 @@ const prompt = ai.definePrompt({
   name: 'generateMaintenancePlanPrompt',
   input: {schema: GenerateMaintenancePlanInputSchema},
   output: {schema: GenerateMaintenancePlanOutputSchema},
-  prompt: `You are an expert maintenance engineer.
+  prompt: `Você é um engenheiro de manutenção especialista.
 
-You will use the provided information to generate a detailed maintenance plan for the equipment.
+Você usará as informações fornecidas para gerar um plano de manutenção detalhado para o equipamento.
 
-Equipment Tag: {{{equipmentTag}}}
-Equipment Description: {{{equipmentDescription}}}
-Equipment Functions: {{{equipmentFunctions}}}
-Failure Modes: {{{failureModes}}}
-Consequence Assessment: {{{consequenceAssessment}}}
+Tag do Equipamento: {{{equipmentTag}}}
+Descrição do Equipamento: {{{equipmentDescription}}}
+Funções do Equipamento: {{{equipmentFunctions}}}
+Modos de Falha: {{{failureModes}}}
+Avaliação de Consequências: {{{consequenceAssessment}}}
 
-Generate a maintenance plan specifying maintenance type (preventive, corrective, etc.), frequency, and a brief explanation of how to perform each task.
+Gere um plano de manutenção detalhado em português, especificando o tipo de manutenção (preventiva, corretiva, etc.), frequência e uma breve explicação de como realizar cada tarefa.
 `,
 });
 

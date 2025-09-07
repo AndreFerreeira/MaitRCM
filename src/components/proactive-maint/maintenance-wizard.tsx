@@ -25,8 +25,8 @@ import StepCard from "./step-card";
 import PlanDisplay from "./plan-display";
 
 const formSchema = z.object({
-  equipmentTag: z.string().min(1, "Equipment tag is required."),
-  equipmentDescription: z.string().min(10, "Please provide a more detailed description."),
+  equipmentTag: z.string().min(1, "A tag do equipamento é obrigatória."),
+  equipmentDescription: z.string().min(10, "Forneça uma descrição mais detalhada."),
 });
 
 type AnalysisStep = "functions" | "failureModes" | "assessment" | "tasks" | "plan";
@@ -96,11 +96,11 @@ export default function MaintenanceWizard() {
 
       setCurrentStep(null);
     } catch (e) {
-      const errorMessage = e instanceof Error ? e.message : "An unknown error occurred.";
+      const errorMessage = e instanceof Error ? e.message : "Ocorreu um erro desconhecido.";
       setError(errorMessage);
       toast({
         variant: "destructive",
-        title: "Analysis Failed",
+        title: "Falha na Análise",
         description: errorMessage,
       });
     } finally {
@@ -117,8 +117,8 @@ export default function MaintenanceWizard() {
               <Settings className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <CardTitle className="text-3xl font-headline uppercase tracking-wider">AI Maintenance Planner</CardTitle>
-              <CardDescription>Generate a comprehensive maintenance plan with AI.</CardDescription>
+              <CardTitle className="text-3xl font-headline uppercase tracking-wider">Planejador de Manutenção AI</CardTitle>
+              <CardDescription>Gere um plano de manutenção abrangente com IA.</CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -130,9 +130,9 @@ export default function MaintenanceWizard() {
                 name="equipmentTag"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-muted-foreground">Equipment Tag/Name</FormLabel>
+                    <FormLabel className="text-muted-foreground">Tag/Nome do Equipamento</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., PMP-001" {...field} />
+                      <Input placeholder="ex: PMP-001" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -143,9 +143,9 @@ export default function MaintenanceWizard() {
                 name="equipmentDescription"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-muted-foreground">Equipment Description</FormLabel>
+                    <FormLabel className="text-muted-foreground">Descrição do Equipamento</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="e.g., Centrifugal pump for coolant circulation" {...field} rows={3}/>
+                      <Textarea placeholder="ex: Bomba centrífuga para circulação de líquido de arrefecimento" {...field} rows={3}/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -155,12 +155,12 @@ export default function MaintenanceWizard() {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Analyzing...
+                    Analisando...
                   </>
                 ) : (
                   <>
                   <Zap className="mr-2 h-4 w-4" />
-                  Generate Plan
+                  Gerar Plano
                   </>
                 )}
               </Button>
@@ -173,7 +173,7 @@ export default function MaintenanceWizard() {
         <div className="space-y-8">
             <StepCard
                 icon={<ListChecks />}
-                title="Equipment Functions"
+                title="Funções do Equipamento"
                 isCurrent={currentStep === 'functions' && isLoading}
                 isCompleted={!!results.functions}
                 hasError={!!error && !results.functions}
@@ -186,7 +186,7 @@ export default function MaintenanceWizard() {
             </StepCard>
             <StepCard
                 icon={<ShieldAlert />}
-                title="Failure Mode Analysis"
+                title="Análise de Modo de Falha"
                 isCurrent={currentStep === 'failureModes' && isLoading}
                 isCompleted={!!results.failureModes}
                 hasError={!!error && !results.failureModes}
@@ -199,17 +199,17 @@ export default function MaintenanceWizard() {
             </StepCard>
             <StepCard
                 icon={<ClipboardList />}
-                title="Consequence Assessment"
+                title="Avaliação de Consequências"
                 isCurrent={currentStep === 'assessment' && isLoading}
                 isCompleted={!!results.assessment}
                 hasError={!!error && !results.assessment}
             >
-                {results.assessment && <div className="prose prose-sm prose-invert max-w-none">{results.assessment}</div>}
+                {results.assessment && <div className="prose prose-sm prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: results.assessment.replace(/\n/g, '<br />') }} />}
             </StepCard>
 
             <StepCard
                 icon={<Wrench />}
-                title="Suggested Maintenance Tasks"
+                title="Tarefas de Manutenção Sugeridas"
                 isCurrent={currentStep === 'tasks' && isLoading}
                 isCompleted={!!results.tasks}
                 hasError={!!error && !results.tasks}
@@ -221,8 +221,8 @@ export default function MaintenanceWizard() {
                                 <h4 className="font-semibold text-primary">{task.task}</h4>
                                 <p className="text-sm text-muted-foreground font-mono mt-1">{task.explanation}</p>
                                 <div className="flex gap-4 mt-3 text-xs font-mono">
-                                    <span><strong className="text-foreground/80">Type:</strong> {task.type}</span>
-                                    <span><strong className="text-foreground/80">Frequency:</strong> {task.frequency}</span>
+                                    <span><strong className="text-foreground/80">Tipo:</strong> {task.type}</span>
+                                    <span><strong className="text-foreground/80">Frequência:</strong> {task.frequency}</span>
                                 </div>
                             </div>
                         ))}
