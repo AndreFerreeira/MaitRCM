@@ -23,6 +23,7 @@ import { Loader2, Settings, ListChecks, ShieldAlert, ClipboardList, Wrench, Zap,
 import StepCard from "./step-card";
 import PlanDisplay from "./plan-display";
 import { type SuggestMaintenanceTasksOutput } from "@/ai/flows/suggest-maintenance-tasks";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
 
 const formSchema = z.object({
   equipmentTag: z.string().min(1, "A tag do equipamento é obrigatória."),
@@ -298,15 +299,22 @@ export default function MaintenanceWizard() {
                 isLoading={isLoading}
             >
                {results.tasks && (
-                    <div className="space-y-2">
+                    <Accordion type="multiple" className="w-full">
                         {results.tasks.maintenanceTasks.map((task, i) => (
-                            <div key={i} className="font-mono text-sm text-gray-300 p-2 border-l-2 border-blue-500 bg-gray-800/30 rounded-r-md">
-                               <p><strong className="text-blue-400">Tarefa:</strong> {task.task}</p>
-                               <p><strong className="text-blue-400">Tipo:</strong> {task.type}</p>
-                               <p><strong className="text-blue-400">Frequência:</strong> {task.frequency}</p>
-                            </div>
+                           <AccordionItem value={`item-${i}`} key={i} className="border-slate-700">
+                             <AccordionTrigger className="font-mono text-sm text-blue-400 hover:no-underline text-left">
+                               {task.task}
+                             </AccordionTrigger>
+                             <AccordionContent>
+                               <div className="font-mono text-sm text-gray-300 space-y-2 pt-2">
+                                 <p><strong className="text-gray-500 font-semibold">Tipo:</strong> {task.type}</p>
+                                 <p><strong className="text-gray-500 font-semibold">Frequência:</strong> {task.frequency}</p>
+                                 <p className="pt-2 mt-2 border-t border-slate-700/50"><strong className="text-gray-500 font-semibold">Detalhes:</strong> {task.explanation}</p>
+                               </div>
+                             </AccordionContent>
+                           </AccordionItem>
                         ))}
-                    </div>
+                    </Accordion>
                 )}
             </StepCard>
             <StepCard
@@ -324,5 +332,3 @@ export default function MaintenanceWizard() {
     </div>
   );
 }
-
-    
