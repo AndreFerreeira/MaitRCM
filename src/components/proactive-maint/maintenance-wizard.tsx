@@ -105,35 +105,58 @@ export default function MaintenanceWizard() {
     setShowResults(true);
 
     try {
+      // Step 1: Get Functions
       setCurrentStep("functions");
-      const funcs = await getFunctionsAction(values);
-      if (!funcs.functions || funcs.functions.length === 0) throw new Error("Não foi possível identificar as funções do equipamento.");
-      setResults(prev => ({ ...prev, functions: funcs.functions }));
-
-      setCurrentStep("failureModes");
-      const fModes = await getFailureModesAction({ equipmentName: values.equipmentTag, functions: funcs.functions });
-      if (!fModes || fModes.length === 0) throw new Error("Não foi possível identificar os modos de falha.");
-      setResults(prev => ({ ...prev, failureModes: fModes }));
-      
-      setCurrentStep("assessment");
-      const assess = await getConsequenceAssessmentAction({ failureModes: fModes });
-      if (!assess) throw new Error("Não foi possível gerar a avaliação de consequências.");
-      setResults(prev => ({ ...prev, assessment: assess }));
-
-      setCurrentStep("tasks");
-      const suggestedTasks = await getSuggestedTasksAction({ equipmentName: values.equipmentTag, failureModes: fModes });
-      if (!suggestedTasks?.maintenanceTasks || suggestedTasks.maintenanceTasks.length === 0) throw new Error("Não foi possível sugerir as tarefas de manutenção.");
-      setResults(prev => ({ ...prev, tasks: suggestedTasks }));
-
-      setCurrentStep("plan");
-      const finalPlan = await generateFinalPlanAction({
-        ...values,
-        equipmentFunctions: funcs.functions.join(', '),
-        failureModes: fModes.join(', '),
-        consequenceAssessment: assess,
+      const funcsResult = await getFunctionsAction({
+        equipmentTag: values.equipmentTag,
+        equipmentDescription: values.equipmentDescription,
       });
-      if (!finalPlan.maintenancePlan) throw new Error("Não foi possível gerar o plano de manutenção final.");
-      setResults(prev => ({ ...prev, plan: finalPlan.maintenancePlan }));
+      if (!funcsResult.functions || funcsResult.functions.length === 0)
+        throw new Error("Não foi possível identificar as funções do equipamento.");
+      setResults((prev) => ({ ...prev, functions: funcsResult.functions }));
+
+      // Step 2: Get Failure Modes
+      setCurrentStep("failureModes");
+      const fModesResult = await getFailureModesAction({
+        equipmentName: values.equipmentTag,
+        functions: funcsResult.functions,
+      });
+      if (!fModesResult || fModesResult.length === 0)
+        throw new Error("Não foi possível identificar os modos de falha.");
+      setResults((prev) => ({ ...prev, failureModes: fModesResult }));
+
+      // Step 3: Get Consequence Assessment
+      setCurrentStep("assessment");
+      const assessResult = await getConsequenceAssessmentAction({
+        failureModes: fModesResult,
+      });
+      if (!assessResult)
+        throw new Error("Não foi possível gerar a avaliação de consequências.");
+      setResults((prev) => ({ ...prev, assessment: assessResult }));
+
+      // Step 4: Get Suggested Tasks
+      setCurrentStep("tasks");
+      const tasksResult = await getSuggestedTasksAction({
+        equipmentName: values.equipmentTag,
+        failureModes: fModesResult,
+      });
+      if (!tasksResult || tasksResult.maintenanceTasks.length === 0)
+        throw new Error("Não foi possível sugerir as tarefas de manutenção.");
+      setResults((prev) => ({ ...prev, tasks: tasksResult }));
+
+      // Step 5: Generate Final Plan
+      setCurrentStep("plan");
+      const planResult = await generateFinalPlanAction({
+        equipmentTag: values.equipmentTag,
+        equipmentDescription: values.equipmentDescription,
+        equipmentFunctions: funcsResult.functions.join(", "),
+        failureModes: fModesResult.join(", "),
+        consequenceAssessment: assessResult,
+        manualContent: values.manualContent,
+      });
+      if (!planResult.maintenancePlan)
+        throw new Error("Não foi possível gerar o plano de manutenção final.");
+      setResults((prev) => ({ ...prev, plan: planResult.maintenancePlan }));
 
       setCurrentStep(null);
     } catch (e) {
