@@ -53,9 +53,9 @@ Texto do usuário:
 {{{manualContent}}}
 {{/if}}
 ---
+{{else}}
+Se nenhuma informação for fornecida pelo usuário, você PODE usar a ferramenta 'maintenanceDocumentRetriever' para buscar manuais que possam fornecer valores.
 {{/if}}
-
-Se nenhuma informação for fornecida no conteúdo do usuário ou se as informações estiverem incompletas, você PODE usar a ferramenta 'maintenanceDocumentRetriever' para buscar manuais que possam fornecer valores.
 
 Se nenhuma fonte de dados (conteúdo do usuário ou ferramenta de busca) fornecer informações suficientes, use seu conhecimento especializado para criar um plano de manutenção genérico, mas eficaz, com base nos dados do equipamento abaixo.
 
