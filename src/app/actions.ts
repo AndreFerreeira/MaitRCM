@@ -1,3 +1,4 @@
+
 'use server';
 
 import { ai } from '@/ai/genkit';
@@ -61,7 +62,7 @@ export async function getConsequenceAssessmentAction(data: { failureModes:string
 
 // Etapa 4: Sugerir Tarefas de Manutenção
 export async function getMaintenanceTasksAction(data: { equipmentName: string; failureModes: string[] }): Promise<SuggestMaintenanceTasksOutput> {
-  return await suggestMaintenanceTasks({ equipmentName: data.equipmentName, failureModes: data.failures });
+  return await suggestMaintenanceTasks({ equipmentName: data.equipmentName, failureModes: data.failureModes });
 }
 
 // Etapa 5: Gerar Plano Final
