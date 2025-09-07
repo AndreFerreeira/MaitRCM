@@ -28,7 +28,7 @@ export default function StepCard({
     return <CircleDashed className="h-5 w-5 text-slate-600" />;
   };
 
-  const showContent = isCompleted || (hasError && !isLoading);
+  const showContent = isCompleted || hasError;
 
   return (
     <Card className={`transition-all duration-500 bg-slate-900/50 border border-slate-800 ${isCompleted ? 'opacity-100' : hasError ? 'opacity-100' : isCurrent ? 'opacity-100' : 'opacity-60'}`}>
@@ -49,3 +49,5 @@ export default function StepCard({
     </Card>
   );
 }
+
+    

@@ -111,8 +111,9 @@ export default function MaintenanceWizard() {
         equipmentTag: values.equipmentTag,
         equipmentDescription: values.equipmentDescription,
       });
-      if (!funcsResult.functions || funcsResult.functions.length === 0)
+      if (!funcsResult.functions || funcsResult.functions.length === 0) {
         throw new Error("Não foi possível identificar as funções do equipamento.");
+      }
       setResults((prev) => ({ ...prev, functions: funcsResult.functions }));
 
       // Step 2: Get Failure Modes
@@ -121,8 +122,9 @@ export default function MaintenanceWizard() {
         equipmentName: values.equipmentTag,
         functions: funcsResult.functions,
       });
-      if (!fModesResult || fModesResult.length === 0)
+      if (!fModesResult || fModesResult.length === 0) {
         throw new Error("Não foi possível identificar os modos de falha.");
+      }
       setResults((prev) => ({ ...prev, failureModes: fModesResult }));
 
       // Step 3: Get Consequence Assessment
@@ -130,8 +132,9 @@ export default function MaintenanceWizard() {
       const assessResult = await getConsequenceAssessmentAction({
         failureModes: fModesResult,
       });
-      if (!assessResult)
+      if (!assessResult) {
         throw new Error("Não foi possível gerar a avaliação de consequências.");
+      }
       setResults((prev) => ({ ...prev, assessment: assessResult }));
 
       // Step 4: Get Suggested Tasks
@@ -140,13 +143,14 @@ export default function MaintenanceWizard() {
         equipmentName: values.equipmentTag,
         failureModes: fModesResult,
       });
-      if (!tasksResult || tasksResult.maintenanceTasks.length === 0)
+      if (!tasksResult || tasksResult.maintenanceTasks.length === 0) {
         throw new Error("Não foi possível sugerir as tarefas de manutenção.");
+      }
       setResults((prev) => ({ ...prev, tasks: tasksResult }));
 
       // Step 5: Generate Final Plan
       setCurrentStep("plan");
-      const planResult = await generateFinalPlanAction({
+       const planResult = await generateFinalPlanAction({
         equipmentTag: values.equipmentTag,
         equipmentDescription: values.equipmentDescription,
         equipmentFunctions: funcsResult.functions.join(", "),
@@ -154,8 +158,9 @@ export default function MaintenanceWizard() {
         consequenceAssessment: assessResult,
         manualContent: values.manualContent,
       });
-      if (!planResult.maintenancePlan)
+      if (!planResult || !planResult.maintenancePlan) {
         throw new Error("Não foi possível gerar o plano de manutenção final.");
+      }
       setResults((prev) => ({ ...prev, plan: planResult.maintenancePlan }));
 
       setCurrentStep(null);
@@ -351,7 +356,7 @@ export default function MaintenanceWizard() {
                 title="Plano de Manutenção"
                 isCurrent={currentStep === 'plan'}
                 isCompleted={!!results.plan}
-                hasError={!!error && currentStep === 'plan'}
+                hasError={!!error && currentStep === 'plan' && !results.plan}
                 isLoading={isLoading}
             >
                {results.plan && <PlanDisplay plan={results.plan} equipmentTag={form.getValues("equipmentTag")} />}
@@ -361,3 +366,5 @@ export default function MaintenanceWizard() {
     </div>
   );
 }
+
+    
