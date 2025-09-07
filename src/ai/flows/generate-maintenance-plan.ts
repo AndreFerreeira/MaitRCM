@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -17,7 +18,7 @@ const GenerateMaintenancePlanInputSchema = z.object({
   equipmentFunctions: z.string().describe('Uma lista das funções críticas do equipamento.'),
   failureModes: z.string().describe('Uma lista dos modos de falha mais prováveis do equipamento, incorporando a consequência da falha.'),
   consequenceAssessment: z.string().describe('As consequências potenciais de cada modo de falha nas dimensões de segurança, impacto ambiental, produção e custo.'),
-  manualContent: z.string().optional().describe("Conteúdo opcional fornecido pelo usuário, como texto ou uma imagem (como data URI), sobre o equipamento."),
+  manualContent: z.string().optional().describe("Conteúdo opcional fornecido pelo usuário, como uma imagem em formato data URI, sobre o equipamento."),
 });
 
 export type GenerateMaintenancePlanInput = z.infer<typeof GenerateMaintenancePlanInputSchema>;
@@ -32,49 +33,34 @@ export async function generateMaintenancePlan(input: GenerateMaintenancePlanInpu
   return generateMaintenancePlanFlow(input);
 }
 
-// Helper to check for image data URI
-function isImageDataUri(str: string) {
-    return /^data:image\/[a-zA-Z]+;base64,/.test(str);
-}
 
 const prompt = ai.definePrompt({
   name: 'generateMaintenancePlanPrompt',
   input: {schema: GenerateMaintenancePlanInputSchema},
   output: {schema: GenerateMaintenancePlanOutputSchema},
-  prompt: `Você é um engenheiro de manutenção especialista.
+  prompt: `Você é um engenheiro de manutenção especialista. Sua tarefa é criar um plano de manutenção abrangente e bem estruturado.
 
-Você usará as informações fornecidas para gerar um plano de manutenção detalhado para o equipamento.
-
-{{#if manualContent}}
-Use as informações fornecidas pelo usuário como fonte primária. Extraia especificações, procedimentos ou quaisquer dados relevantes.
-Conteúdo Fornecido:
----
-{{#if (isImageDataUri manualContent)}}
-Imagem do usuário: {{media url=manualContent}}
-{{else}}
-Texto do usuário:
-{{{manualContent}}}
-{{/if}}
----
-{{/if}}
-
-Se o conteúdo fornecido não for suficiente, use seu conhecimento especializado para criar um plano de manutenção genérico, mas eficaz, com base nos dados do equipamento abaixo.
+Use as seguintes informações para gerar o plano:
 
 Dados do Equipamento:
 - Tag: {{{equipmentTag}}}
 - Descrição: {{{equipmentDescription}}}
-- Funções: {{{equipmentFunctions}}}
-- Modos de Falha: {{{failureModes}}}
+- Funções Críticas: {{{equipmentFunctions}}}
+- Modos de Falha Identificados: {{{failureModes}}}
 - Avaliação de Consequências: {{{consequenceAssessment}}}
 
-Gere um plano de manutenção detalhado em português, especificando o tipo de manutenção (preventiva, corretiva, etc.), frequência e uma breve explicação de como realizar cada tarefa. O plano deve ser bem estruturado em formato markdown.
+{{#if manualContent}}
+Informações Adicionais Fornecidas pelo Usuário (use como referência principal se disponível):
+- Imagem ou Manual (como data URI): {{media url=manualContent}}
+{{/if}}
+
+Com base em todos esses dados, gere um plano de manutenção detalhado em português. O plano deve ser formatado em markdown e incluir seções claras para:
+1.  **Tarefas de Manutenção Preventiva:** (Inspeções, lubrificação, etc.)
+2.  **Tarefas de Manutenção Preditiva:** (Análise de vibração, termografia, etc.)
+3.  **Procedimentos Recomendados:** Para cada tarefa, especifique a frequência, o tipo de manutenção e uma breve explicação de como realizá-la.
+
+Se o conteúdo do usuário (imagem) não for claro, use seu conhecimento especializado com os dados do equipamento para criar o plano.
 `,
-  // Register the helper function with Handlebars
-  template: {
-    helpers: {
-      isImageDataUri
-    }
-  }
 });
 
 const generateMaintenancePlanFlow = ai.defineFlow(

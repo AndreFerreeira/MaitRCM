@@ -76,5 +76,3 @@ export async function generateFinalPlanAction(data: {
 }): Promise<GenerateMaintenancePlanOutput> {
   return await generateMaintenancePlan(data);
 }
-
-    
