@@ -10,7 +10,6 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import { maintenanceDocumentRetriever } from '../tools/maintenance-document-retriever';
 
 const GenerateMaintenancePlanInputSchema = z.object({
   equipmentTag: z.string().describe('A tag do equipamento.'),
@@ -37,13 +36,12 @@ const prompt = ai.definePrompt({
   name: 'generateMaintenancePlanPrompt',
   input: {schema: GenerateMaintenancePlanInputSchema},
   output: {schema: GenerateMaintenancePlanOutputSchema},
-  tools: [maintenanceDocumentRetriever],
   prompt: `Você é um engenheiro de manutenção especialista.
 
 Você usará as informações fornecidas para gerar um plano de manutenção detalhado para o equipamento.
 
 {{#if manualContent}}
-Use o conteúdo ou a imagem fornecida pelo usuário como a principal fonte de verdade para criar o plano de manutenção. Extraia procedimentos, frequências e especificações diretamente dele.
+Use a imagem fornecida pelo usuário como uma fonte de informação primária. Extraia especificações, procedimentos ou quaisquer dados relevantes dela.
 Conteúdo Fornecido:
 ---
 {{#if (startsWith manualContent "data:image")}}
@@ -53,11 +51,9 @@ Texto do usuário:
 {{{manualContent}}}
 {{/if}}
 ---
-{{else}}
-Se nenhuma informação for fornecida pelo usuário, você PODE usar a ferramenta 'maintenanceDocumentRetriever' para buscar manuais que possam fornecer valores.
 {{/if}}
 
-Se nenhuma fonte de dados (conteúdo do usuário ou ferramenta de busca) fornecer informações suficientes, use seu conhecimento especializado para criar um plano de manutenção genérico, mas eficaz, com base nos dados do equipamento abaixo.
+Se o conteúdo fornecido não for suficiente, use seu conhecimento especializado para criar um plano de manutenção genérico, mas eficaz, com base nos dados do equipamento abaixo.
 
 Dados do Equipamento:
 - Tag: {{{equipmentTag}}}

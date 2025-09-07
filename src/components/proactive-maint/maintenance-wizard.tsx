@@ -356,7 +356,7 @@ export default function MaintenanceWizard() {
                 title="Plano de Manutenção"
                 isCurrent={currentStep === 'plan'}
                 isCompleted={!!results.plan}
-                hasError={!!error && currentStep === 'plan' && !results.plan}
+                hasError={!!error && currentStep === 'plan'}
                 isLoading={isLoading}
             >
                {results.plan && <PlanDisplay plan={results.plan} equipmentTag={form.getValues("equipmentTag")} />}
@@ -366,5 +366,3 @@ export default function MaintenanceWizard() {
     </div>
   );
 }
-
-    
