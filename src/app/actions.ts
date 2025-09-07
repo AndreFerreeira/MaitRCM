@@ -4,6 +4,7 @@
 import { ai } from '@/ai/genkit';
 import { identifyEquipmentFunctions, type IdentifyEquipmentFunctionsOutput } from '@/ai/flows/identify-equipment-functions';
 import { generateMaintenancePlan, type GenerateMaintenancePlanOutput } from '@/ai/flows/generate-maintenance-plan';
+import { suggestMaintenanceTasks, type SuggestMaintenanceTasksOutput } from '@/ai/flows/suggest-maintenance-tasks';
 import { z } from 'zod';
 
 // Etapa 1: Identificar Funções do Equipamento
@@ -58,8 +59,13 @@ export async function getConsequenceAssessmentAction(data: { failureModes:string
     return output?.assessment || "Nenhuma avaliação gerada.";
 }
 
+// Etapa 4: Sugerir Tarefas de Manutenção
+export async function getSuggestedTasksAction(data: { equipmentName: string; failureModes: string[] }): Promise<SuggestMaintenanceTasksOutput> {
+    return await suggestMaintenanceTasks(data);
+}
 
-// Etapa 4: Gerar Plano Final
+
+// Etapa 5: Gerar Plano Final
 export async function generateFinalPlanAction(data: {
   equipmentTag: string;
   equipmentDescription: string;
@@ -70,3 +76,5 @@ export async function generateFinalPlanAction(data: {
 }): Promise<GenerateMaintenancePlanOutput> {
   return await generateMaintenancePlan(data);
 }
+
+    

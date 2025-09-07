@@ -18,10 +18,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { getFunctionsAction, getFailureModesAction, getConsequenceAssessmentAction, generateFinalPlanAction } from "@/app/actions";
-import { Loader2, Settings, ListChecks, ShieldAlert, ClipboardList, Wrench, Zap, FileImage, X } from "lucide-react";
+import { getFunctionsAction, getFailureModesAction, getConsequenceAssessmentAction, generateFinalPlanAction, getSuggestedTasksAction } from "@/app/actions";
+import { Loader2, Settings, ListChecks, ShieldAlert, ClipboardList, Wrench, Zap, FileImage, X, AlertTriangle } from "lucide-react";
 import StepCard from "./step-card";
 import PlanDisplay from "./plan-display";
+import { type SuggestMaintenanceTasksOutput } from "@/ai/flows/suggest-maintenance-tasks";
 
 const formSchema = z.object({
   equipmentTag: z.string().min(1, "A tag do equipamento é obrigatória."),
@@ -29,12 +30,13 @@ const formSchema = z.object({
   manualContent: z.string().optional(),
 });
 
-type AnalysisStep = "functions" | "failureModes" | "assessment" | "plan";
+type AnalysisStep = "functions" | "failureModes" | "assessment" | "tasks" | "plan";
 
 interface Results {
   functions: string[] | null;
   failureModes: string[] | null;
   assessment: string | null;
+  tasks: SuggestMaintenanceTasksOutput | null;
   plan: string | null;
 }
 
@@ -46,6 +48,7 @@ export default function MaintenanceWizard() {
     functions: null,
     failureModes: null,
     assessment: null,
+    tasks: null,
     plan: null,
   });
   const [showResults, setShowResults] = useState(false);
@@ -95,7 +98,7 @@ export default function MaintenanceWizard() {
   const runAnalysis = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     setError(null);
-    setResults({ functions: null, failureModes: null, assessment: null, plan: null });
+    setResults({ functions: null, failureModes: null, assessment: null, tasks: null, plan: null });
     setShowResults(true);
 
     try {
@@ -113,6 +116,11 @@ export default function MaintenanceWizard() {
       const assess = await getConsequenceAssessmentAction({ failureModes: fModes });
       if (!assess) throw new Error("Não foi possível gerar a avaliação de consequências.");
       setResults(prev => ({ ...prev, assessment: assess }));
+
+      setCurrentStep("tasks");
+      const suggestedTasks = await getSuggestedTasksAction({ equipmentName: values.equipmentTag, failureModes: fModes });
+      if (!suggestedTasks?.maintenanceTasks || suggestedTasks.maintenanceTasks.length === 0) throw new Error("Não foi possível sugerir as tarefas de manutenção.");
+      setResults(prev => ({ ...prev, tasks: suggestedTasks }));
 
       setCurrentStep("plan");
       const finalPlan = await generateFinalPlanAction({
@@ -140,15 +148,15 @@ export default function MaintenanceWizard() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
-      <Card className="border-0 bg-gradient-to-br from-slate-900 via-slate-950 to-black/95 shadow-2xl shadow-blue-500/10">
+      <Card className="border-0 bg-gradient-to-br from-gray-950 via-gray-900 to-black shadow-2xl shadow-blue-500/10">
         <CardHeader>
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
+            <div className="w-12 h-12 rounded-lg bg-blue-600/10 flex items-center justify-center border border-blue-500/30">
               <Wrench className="h-6 w-6 text-blue-400" />
             </div>
             <div>
-              <CardTitle className="text-3xl font-headline uppercase tracking-wider text-slate-100">Planejador de Manutenção AI</CardTitle>
-              <CardDescription className="text-slate-400">Gere um plano de manutenção abrangente com IA.</CardDescription>
+              <CardTitle className="text-3xl font-headline tracking-wider text-gray-50">Planejador de Manutenção Preditiva</CardTitle>
+              <CardDescription className="text-gray-400">Gere um plano de manutenção RCM completo usando IA.</CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -161,7 +169,7 @@ export default function MaintenanceWizard() {
                   name="equipmentTag"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-slate-400">Tag/Nome do Equipamento</FormLabel>
+                      <FormLabel className="text-gray-400">Tag/Nome do Equipamento</FormLabel>
                       <FormControl>
                         <Input placeholder="ex: PMP-001" {...field} />
                       </FormControl>
@@ -174,7 +182,7 @@ export default function MaintenanceWizard() {
                   name="equipmentDescription"
                   render={({ field }) => (
                     <FormItem className="md:col-span-2">
-                      <FormLabel className="text-slate-400">Descrição do Equipamento</FormLabel>
+                      <FormLabel className="text-gray-400">Descrição do Equipamento</FormLabel>
                       <FormControl>
                         <Textarea rows={4} placeholder="ex: Bomba centrífuga para circulação de água de resfriamento, motor de 50CV, localizada no setor 3." {...field} />
                       </FormControl>
@@ -189,7 +197,7 @@ export default function MaintenanceWizard() {
                 name="manualContent"
                 render={() => (
                   <FormItem>
-                     <FormLabel className="text-slate-400 flex items-center gap-2">
+                     <FormLabel className="text-gray-400 flex items-center gap-2">
                       <FileImage className="w-4 h-4"/>
                       Anexar Imagem (Opcional)
                     </FormLabel>
@@ -206,7 +214,7 @@ export default function MaintenanceWizard() {
                             onChange={handleFileChange} 
                         />
                         {selectedFile && (
-                            <div className="flex items-center gap-2 p-2 rounded-md bg-slate-800/50 text-sm">
+                            <div className="flex items-center gap-2 p-2 rounded-md bg-gray-800/50 text-sm">
                                 <span>{selectedFile.name}</span>
                                 <Button type="button" variant="ghost" size="icon" className="h-6 w-6" onClick={removeFile}>
                                     <X className="h-4 w-4" />
@@ -215,7 +223,7 @@ export default function MaintenanceWizard() {
                         )}
                        </div>
                     </FormControl>
-                     <FormDescription className="text-slate-500">
+                     <FormDescription className="text-gray-500">
                       Anexe uma imagem do equipamento, placa de especificações ou manual.
                     </FormDescription>
                     <FormMessage />
@@ -252,7 +260,7 @@ export default function MaintenanceWizard() {
                 isLoading={isLoading}
             >
                 {results.functions && (
-                    <ul className="list-disc pl-5 space-y-1 font-mono text-sm text-slate-300">
+                    <ul className="list-disc pl-5 space-y-1 font-mono text-sm text-gray-300">
                         {results.functions.map((func, i) => <li key={i}>{func}</li>)}
                     </ul>
                 )}
@@ -266,7 +274,7 @@ export default function MaintenanceWizard() {
                 isLoading={isLoading}
             >
                 {results.failureModes && (
-                     <ul className="list-disc pl-5 space-y-1 font-mono text-sm text-slate-300">
+                     <ul className="list-disc pl-5 space-y-1 font-mono text-sm text-gray-300">
                         {results.failureModes.map((mode, i) => <li key={i}>{mode}</li>)}
                     </ul>
                 )}
@@ -279,7 +287,27 @@ export default function MaintenanceWizard() {
                 hasError={!!error && currentStep === 'assessment'}
                 isLoading={isLoading}
             >
-                {results.assessment && <div className="prose prose-sm prose-invert max-w-none text-slate-300" dangerouslySetInnerHTML={{ __html: results.assessment.replace(/\n/g, '<br />') }} />}
+                {results.assessment && <div className="prose prose-sm prose-invert max-w-none text-gray-300" dangerouslySetInnerHTML={{ __html: results.assessment.replace(/\n/g, '<br />') }} />}
+            </StepCard>
+            <StepCard
+                icon={<AlertTriangle />}
+                title="Tarefas de Manutenção Sugeridas"
+                isCurrent={currentStep === 'tasks'}
+                isCompleted={!!results.tasks}
+                hasError={!!error && currentStep === 'tasks'}
+                isLoading={isLoading}
+            >
+               {results.tasks && (
+                    <div className="space-y-2">
+                        {results.tasks.maintenanceTasks.map((task, i) => (
+                            <div key={i} className="font-mono text-sm text-gray-300 p-2 border-l-2 border-blue-500 bg-gray-800/30 rounded-r-md">
+                               <p><strong className="text-blue-400">Tarefa:</strong> {task.task}</p>
+                               <p><strong className="text-blue-400">Tipo:</strong> {task.type}</p>
+                               <p><strong className="text-blue-400">Frequência:</strong> {task.frequency}</p>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </StepCard>
             <StepCard
                 icon={<Wrench />}
@@ -296,3 +324,5 @@ export default function MaintenanceWizard() {
     </div>
   );
 }
+
+    
