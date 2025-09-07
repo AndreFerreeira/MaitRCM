@@ -18,7 +18,7 @@ const GenerateMaintenancePlanInputSchema = z.object({
   equipmentFunctions: z.string().describe('Uma lista das funções críticas do equipamento.'),
   failureModes: z.string().describe('Uma lista dos modos de falha mais prováveis do equipamento, incorporando a consequência da falha.'),
   consequenceAssessment: z.string().describe('As consequências potenciais de cada modo de falha nas dimensões de segurança, impacto ambiental, produção e custo.'),
-  manualContent: z.string().optional().describe('Conteúdo de manuais ou informações fornecidas pelo usuário sobre o equipamento.'),
+  manualContent: z.string().optional().describe("Conteúdo de manuais, informações ou uma imagem (como data URI) fornecida pelo usuário sobre o equipamento."),
 });
 
 export type GenerateMaintenancePlanInput = z.infer<typeof GenerateMaintenancePlanInputSchema>;
@@ -43,16 +43,21 @@ const prompt = ai.definePrompt({
 Você usará as informações fornecidas para gerar um plano de manutenção detalhado para o equipamento.
 
 {{#if manualContent}}
-Use o conteúdo do manual fornecido pelo usuário como a principal fonte de verdade para criar o plano de manutenção. Extraia procedimentos, frequências e especificações diretamente dele.
-Conteúdo do Manual:
+Use o conteúdo ou a imagem fornecida pelo usuário como a principal fonte de verdade para criar o plano de manutenção. Extraia procedimentos, frequências e especificações diretamente dele.
+Conteúdo Fornecido:
 ---
+{{#if (manualContent.startsWith "data:image")}}
+Imagem do usuário: {{media url=manualContent}}
+{{else}}
+Texto do usuário:
 {{{manualContent}}}
+{{/if}}
 ---
 {{/if}}
 
-Se nenhuma informação for fornecida no manual ou se as informações estiverem incompletas, utilize a ferramenta 'maintenanceDocumentRetriever' para buscar manuais e relatórios que possam fornecer valores, procedimentos e frequências específicas. Incorpore essas informações encontradas no plano final.
+Se nenhuma informação for fornecida no conteúdo do usuário ou se as informações estiverem incompletas, utilize a ferramenta 'maintenanceDocumentRetriever' para buscar manuais e relatórios que possam fornecer valores, procedimentos e frequências específicas. Incorpore essas informações encontradas no plano final.
 
-Se nenhuma fonte de dados (manual do usuário ou ferramenta de busca) fornecer informações suficientes, use seu conhecimento especializado para criar um plano de manutenção genérico, mas eficaz.
+Se nenhuma fonte de dados (conteúdo do usuário ou ferramenta de busca) fornecer informações suficientes, use seu conhecimento especializado para criar um plano de manutenção genérico, mas eficaz.
 
 Dados do Equipamento:
 - Tag: {{{equipmentTag}}}

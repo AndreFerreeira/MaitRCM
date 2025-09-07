@@ -15,12 +15,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { getFunctionsAction, getFailureModesAction, getConsequenceAssessmentAction, getMaintenanceTasksAction, generateFinalPlanAction } from "@/app/actions";
 import type { SuggestMaintenanceTasksOutput } from "@/ai/flows/suggest-maintenance-tasks";
-import { Loader2, Settings, ListChecks, ShieldAlert, ClipboardList, Wrench, Zap, FileText } from "lucide-react";
+import { Loader2, Settings, ListChecks, ShieldAlert, ClipboardList, Wrench, Zap, FileImage, X } from "lucide-react";
 import StepCard from "./step-card";
 import PlanDisplay from "./plan-display";
 
@@ -52,6 +51,8 @@ export default function MaintenanceWizard() {
     plan: null,
   });
   const [showResults, setShowResults] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<{name: string, dataUrl: string} | null>(null);
+
 
   const { toast } = useToast();
 
@@ -63,6 +64,35 @@ export default function MaintenanceWizard() {
       manualContent: "",
     },
   });
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const dataUrl = e.target?.result as string;
+            setSelectedFile({ name: file.name, dataUrl });
+            form.setValue("manualContent", dataUrl);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        toast({
+            variant: "destructive",
+            title: "Tipo de arquivo inválido",
+            description: "Por favor, selecione um arquivo de imagem (PNG, JPG, etc).",
+        });
+      }
+    }
+  };
+  
+  const removeFile = () => {
+    setSelectedFile(null);
+    form.setValue("manualContent", "");
+    const fileInput = document.getElementById('file-upload') as HTMLInputElement;
+    if(fileInput) fileInput.value = "";
+  }
+
 
   const runAnalysis = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
@@ -155,25 +185,46 @@ export default function MaintenanceWizard() {
                   )}
                 />
               </div>
+              
               <FormField
                 control={form.control}
                 name="manualContent"
-                render={({ field }) => (
+                render={() => (
                   <FormItem>
-                    <FormLabel className="text-muted-foreground flex items-center gap-2">
-                      <FileText className="w-4 h-4"/>
-                      Informações Adicionais (Opcional)
+                     <FormLabel className="text-muted-foreground flex items-center gap-2">
+                      <FileImage className="w-4 h-4"/>
+                      Anexar Imagem (Opcional)
                     </FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Cole aqui o conteúdo de manuais, procedimentos ou informações relevantes..." {...field} rows={6}/>
+                       <div className="flex items-center gap-2">
+                        <Button type="button" variant="outline" onClick={() => document.getElementById('file-upload')?.click()}>
+                            Escolher Arquivo
+                        </Button>
+                        <Input 
+                            id="file-upload"
+                            type="file" 
+                            className="hidden" 
+                            accept="image/*"
+                            onChange={handleFileChange} 
+                        />
+                        {selectedFile && (
+                            <div className="flex items-center gap-2 p-2 rounded-md bg-secondary/50 text-sm">
+                                <span>{selectedFile.name}</span>
+                                <Button type="button" variant="ghost" size="icon" className="h-6 w-6" onClick={removeFile}>
+                                    <X className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        )}
+                       </div>
                     </FormControl>
                      <FormDescription>
-                      Quanto mais detalhes você fornecer, mais preciso será o plano gerado.
+                      Anexe uma imagem do equipamento, placa de especificações ou manual.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
               <Button type="submit" disabled={isLoading} size="lg" className="w-full md:w-auto bg-primary text-primary-foreground hover:bg-primary/90">
                 {isLoading ? (
                   <>
