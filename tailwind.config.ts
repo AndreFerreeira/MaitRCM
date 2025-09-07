@@ -12,7 +12,7 @@ export default {
     extend: {
       fontFamily: {
         body: ['Inter', ...fontFamily.sans],
-        headline: ['Inter', ...fontFamily.sans],
+        headline: ['"Exo 2"', ...fontFamily.sans],
         mono: ["Roboto Mono", ...fontFamily.mono],
       },
       colors: {

@@ -37,17 +37,19 @@ export default function PlanDisplay({ plan, equipmentTag }: PlanDisplayProps) {
   }, [plan]);
 
   return (
-    <Card className="bg-gradient-to-br from-primary/10 to-background border-primary/20">
+    <Card className="bg-gradient-to-br from-primary/5 to-background border-primary/20">
       <CardHeader>
         <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
-          <div className="flex items-center gap-3">
-             <FileText className="h-8 w-8 text-accent" />
+          <div className="flex items-center gap-4">
+             <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                <FileText className="h-6 w-6 text-primary" />
+             </div>
             <div>
-              <CardTitle className="text-2xl font-headline tracking-tighter">Your Maintenance Plan</CardTitle>
-              <CardDescription>The detailed maintenance plan is ready for export.</CardDescription>
+              <CardTitle className="text-3xl font-headline uppercase tracking-wider">Maintenance Plan</CardTitle>
+              <CardDescription>The detailed maintenance plan is ready.</CardDescription>
             </div>
           </div>
-          <Button onClick={handleExport} variant="outline" className="shrink-0 bg-accent text-accent-foreground hover:bg-accent/90 border-accent/50">
+          <Button onClick={handleExport} variant="outline" className="shrink-0">
             <Download className="mr-2 h-4 w-4" />
             Export Plan
           </Button>
@@ -57,8 +59,8 @@ export default function PlanDisplay({ plan, equipmentTag }: PlanDisplayProps) {
         {planSections.length > 0 ? (
           <Accordion type="multiple" className="w-full" defaultValue={planSections.map(s => s.id)}>
             {planSections.map(section => (
-              <AccordionItem value={section.id} key={section.id} className="border-white/10">
-                <AccordionTrigger className="text-lg font-semibold hover:no-underline text-accent">{section.title}</AccordionTrigger>
+              <AccordionItem value={section.id} key={section.id} className="border-border">
+                <AccordionTrigger className="text-lg font-semibold hover:no-underline text-primary">{section.title}</AccordionTrigger>
                 <AccordionContent>
                   <div className="whitespace-pre-wrap font-mono text-sm leading-relaxed prose prose-sm prose-invert max-w-none">
                     {section.content}

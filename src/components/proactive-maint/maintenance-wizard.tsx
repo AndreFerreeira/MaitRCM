@@ -110,13 +110,15 @@ export default function MaintenanceWizard() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
-      <Card className="bg-card/50 border-white/10">
+      <Card className="bg-card/50 border-border shadow-2xl shadow-primary/10">
         <CardHeader>
-          <div className="flex items-center gap-3">
-            <Settings className="h-8 w-8 text-accent" />
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Settings className="h-6 w-6 text-primary" />
+            </div>
             <div>
-              <CardTitle className="text-2xl font-headline tracking-tighter">AI Maintenance Planner</CardTitle>
-              <CardDescription>Describe your equipment to generate a comprehensive maintenance plan.</CardDescription>
+              <CardTitle className="text-3xl font-headline uppercase tracking-wider">AI Maintenance Planner</CardTitle>
+              <CardDescription>Generate a comprehensive maintenance plan with AI.</CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -128,11 +130,10 @@ export default function MaintenanceWizard() {
                 name="equipmentTag"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-accent">Equipment Tag/Name</FormLabel>
+                    <FormLabel className="text-muted-foreground">Equipment Tag/Name</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g., PMP-001" {...field} />
                     </FormControl>
-                    <FormDescription>A unique identifier for the equipment.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -142,16 +143,15 @@ export default function MaintenanceWizard() {
                 name="equipmentDescription"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-accent">Equipment Description</FormLabel>
+                    <FormLabel className="text-muted-foreground">Equipment Description</FormLabel>
                     <FormControl>
                       <Textarea placeholder="e.g., Centrifugal pump for coolant circulation" {...field} rows={3}/>
                     </FormControl>
-                     <FormDescription>A short description of what the equipment is and does.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" disabled={isLoading} size="lg" className="w-full md:w-auto bg-accent text-accent-foreground hover:bg-accent/90">
+              <Button type="submit" disabled={isLoading} size="lg" className="w-full md:w-auto bg-primary text-primary-foreground hover:bg-primary/90">
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -160,7 +160,7 @@ export default function MaintenanceWizard() {
                 ) : (
                   <>
                   <Zap className="mr-2 h-4 w-4" />
-                  Generate Maintenance Plan
+                  Generate Plan
                   </>
                 )}
               </Button>
@@ -217,10 +217,10 @@ export default function MaintenanceWizard() {
                 {results.tasks && (
                     <div className="space-y-4">
                         {results.tasks.map((task, i) => (
-                            <div key={i} className="p-3 border border-white/10 bg-black/20 rounded-lg">
-                                <h4 className="font-semibold text-accent">{task.task}</h4>
-                                <p className="text-sm text-muted-foreground font-mono">{task.explanation}</p>
-                                <div className="flex gap-4 mt-2 text-xs font-mono">
+                            <div key={i} className="p-4 border border-border bg-secondary/50 rounded-lg">
+                                <h4 className="font-semibold text-primary">{task.task}</h4>
+                                <p className="text-sm text-muted-foreground font-mono mt-1">{task.explanation}</p>
+                                <div className="flex gap-4 mt-3 text-xs font-mono">
                                     <span><strong className="text-foreground/80">Type:</strong> {task.type}</span>
                                     <span><strong className="text-foreground/80">Frequency:</strong> {task.frequency}</span>
                                 </div>
