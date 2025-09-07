@@ -15,6 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { getFunctionsAction, getFailureModesAction, getConsequenceAssessmentAction, getMaintenanceTasksAction, generateFinalPlanAction } from "@/app/actions";
@@ -157,7 +158,7 @@ export default function MaintenanceWizard() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(runAnalysis)} className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-6">
                 <FormField
                   control={form.control}
                   name="equipmentTag"
@@ -178,7 +179,7 @@ export default function MaintenanceWizard() {
                     <FormItem>
                       <FormLabel className="text-muted-foreground">Descrição do Equipamento</FormLabel>
                       <FormControl>
-                        <Input placeholder="ex: Bomba centrífuga..." {...field} />
+                        <Textarea placeholder="ex: Bomba centrífuga para circulação de água de resfriamento, motor de 50CV, localizada no setor 3." {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
